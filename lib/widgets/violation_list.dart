@@ -1,0 +1,48 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:photocontrolapp/blocs/blocs.dart';
+import 'package:photocontrolapp/widgets/widgets.dart';
+
+class ViolationList extends StatelessWidget {
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<ViolationsBloc, ViolationsState>(
+      builder: (context, state) {
+
+        if (state is ViolationsLoadSuccess) {
+          var violations = state.violations;
+
+          return GridView.builder(
+            padding: const EdgeInsets.all(8.0),
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              crossAxisSpacing: 5.0,
+              mainAxisSpacing: 5.0,
+              childAspectRatio: 1
+            ),
+            itemCount: violations.length,
+            itemBuilder: (context, index) {
+              return CardItem(
+                violation: violations[index],
+              );
+            },
+          );
+        }
+
+        if (state is ViolationsLoadFailure) {
+          return Center(
+            child: Text("Error on loading violations"),
+          );
+        }
+
+        return LoadingIndicator();
+      },
+    );
+      ListView(
+      children: <Widget>[
+
+      ],
+    );
+  }
+}
