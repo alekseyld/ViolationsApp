@@ -1,5 +1,7 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:photocontrolapp/models/models.dart';
+import 'package:photocontrolapp/widgets/photo_card.dart';
 
 typedef OnSaveCallback = Function(Violation violation);
 
@@ -14,146 +16,96 @@ class AddViolationScreen extends StatefulWidget {
 
 class _AddViolationScreenState extends State<AddViolationScreen> {
   static final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  static final GlobalKey<PhotoCardState> _photoCardKey = GlobalKey<PhotoCardState>();
+
+  String _title;
+  String _description;
+
+  String _validateText(String value) {
+    if (value.isEmpty) {
+      return "Поле обязательно для заполнения";
+    }
+    return null;
+  }
 
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
+    const sizedBoxSpace = SizedBox(height: 24);
 
     return Scaffold(
         backgroundColor: Colors.white,
         appBar: AppBar(
           title: Text("Новое нарушение"),
         ),
-        body: Column(
-          children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Text(
-                "Вложенные изображения:",
-                style: textTheme.subtitle1,
-              ),
-            ),
-            Card(
-              elevation: 8.0,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8)
-              ),
-              margin: const EdgeInsets.only(
-                top: 0,
-                bottom: 0,
-                left: 16,
-                right: 16
-              ),
-              child: Container(
-                padding: const EdgeInsets.only(
-                    right: 16, left: 16, top: 27, bottom: 27),
-                height: 180,
-                child: ListView.builder(
-                  itemCount: 5,
-                  scrollDirection: Axis.horizontal,
-                  itemBuilder: (context, index) {
-                    if (index == 0) {
-                      return GestureDetector(
-                        onTap: () {
-                          //TODO: Open Camera for photo
-                        },
-                        child: Container(
-                          height: 125,
-                          width: 125,
-                          child: Card(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16)
-                            ),
-                            color: Color(0xFFC4C4C4),
-                            child: Icon(
-                              Icons.camera_alt,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                      );
-                    }
-
-                    return Container(
-                      height: 125,
-                      width: 125,
-                      child: Center(
-                        child: Text("Icon"),
-                      ),
-                    );
+        body: Form(
+          key: _formKey,
+          child: SingleChildScrollView(
+            dragStartBehavior: DragStartBehavior.down,
+            padding: EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: <Widget>[
+                Text(
+                  "Вложенные изображения:",
+                  style: textTheme.subtitle1,
+                  textAlign: TextAlign.center,
+                ),
+                PhotoCard(
+                  key: _photoCardKey
+                ),
+                sizedBoxSpace,
+                TextFormField(
+                  textCapitalization: TextCapitalization.words,
+                  decoration: InputDecoration(
+                    filled: true,
+                    hintText: "Краткий заголовок",
+                    labelText: "Название нарушения",
+                  ),
+                  validator: _validateText,
+                  onSaved: (value) {
+                    _title = value;
                   },
                 ),
-              ),
-            )
-          ],
+                sizedBoxSpace,
+                TextFormField(
+                  decoration: InputDecoration(
+                    border: const OutlineInputBorder(),
+                    hintText: "Общая информация по поводу нарушения",
+                    labelText: "Описание",
+                  ),
+                  maxLines: 4,
+                  validator: _validateText,
+                  onSaved: (value) {
+                    _description = value;
+                  },
+                ),
+                sizedBoxSpace,
+                RaisedButton(
+                  child: Text("СОЗДАТЬ"),
+                  textColor: Colors.white,
+                  color: Color(0xFF6200EE),
+                  onPressed: () {
+                    if (_photoCardKey.currentState.photoPathList.isNotEmpty) {
+                      if (_formKey.currentState.validate()) {
+                        _formKey.currentState.save();
+                        widget.onSave(
+                          Violation(
+                            title: _title,
+                            description: _description,
+                            images: _photoCardKey.currentState.photoPathList
+                          )
+                        );
+                        Navigator.pop(context);
+                      }
+                    } else {
+                      //TODO: Make toast
+                    }
+                  },
+                )
+              ],
+            ),
+          ),
         ));
   }
 }
-
-//Column(
-//            children: <Widget>[
-//              Container(
-//                height: 180,
-//                child: ListView(
-//                  scrollDirection: Axis.horizontal,
-//                  children: <Widget>[
-//                    Container(
-//                        width: 180,
-//                        child: Card(
-//                          color: Colors.white30,
-//                          child: Center(
-//                            child: Icon(
-//                              Icons.add,
-//                              size: 50,
-//                            ),
-//                          ),
-//                        )),
-//                    Container(
-//                      padding: EdgeInsets.all(8.0),
-//                      width: 180,
-//                      child: Image.network(
-//                        "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fi.ytimg.com%2Fvi%2FDt8y0l-n7ig%2Fmaxresdefault.jpg&f=1&nofb=1",
-//                        fit: BoxFit.cover,
-//                      ),
-//                    ),
-//                    Container(
-//                      padding: EdgeInsets.all(8.0),
-//                      width: 180,
-//                      child: Image.network(
-//                        "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fi.ytimg.com%2Fvi%2FDt8y0l-n7ig%2Fmaxresdefault.jpg&f=1&nofb=1",
-//                        fit: BoxFit.cover,
-//                      ),
-//                    ),
-//                    Container(
-//                      padding: EdgeInsets.all(8.0),
-//                      width: 180,
-//                      child: Image.network(
-//                        "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fi.ytimg.com%2Fvi%2FDt8y0l-n7ig%2Fmaxresdefault.jpg&f=1&nofb=1",
-//                        fit: BoxFit.cover,
-//                      ),
-//                    ),
-//                  ],
-//                ),
-//              ),
-//
-//            ],
-//));
-
-//              Form(
-//                key: _formKey,
-//                child: ListView(
-//                  children: <Widget>[
-//                    TextFormField(
-//                      autofocus: true,
-//                      style: textTheme.headline5,
-//                      decoration: InputDecoration(
-//                        hintText: "Заголовок",
-//                      ),
-//                      validator: (val) {
-//                        return val.trim().isEmpty ? "Not Empty" : null;
-//                      },
-////                      onSaved: (value) => _task = value,
-//                    ),
-//                  ],
-//                ),
-//              ),

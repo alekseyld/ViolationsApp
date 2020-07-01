@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:photocontrolapp/models/models.dart';
 
@@ -12,8 +14,8 @@ class CardItem extends StatelessWidget {
     final Widget image = Material(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
       clipBehavior: Clip.antiAlias,
-      child: Image.network(
-        violation.images[0],
+      child: Image.file(
+        File(violation.images[0]),
         fit: BoxFit.cover,
       ),
     );
