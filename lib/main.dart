@@ -24,7 +24,8 @@ class ViolationsApp extends StatelessWidget {
     return MaterialApp(
       title: 'CardList',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primarySwatch: Colors.green,
+        accentColor: Colors.blueAccent,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       home: HomeScreen(),

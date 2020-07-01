@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:photocontrolapp/models/models.dart';
 
 class CardItem extends StatelessWidget {
+  final GestureTapCallback onTap;
   final Violation violation;
 
-  CardItem({this.violation, Key key}) : super(key: key);
+  CardItem({this.violation, this.onTap, Key key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -17,23 +18,24 @@ class CardItem extends StatelessWidget {
       ),
     );
 
-    return GridTile(
-      footer: Material(
-        color: Colors.transparent,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(4))
-        ),
-        clipBehavior: Clip.antiAlias,
-        child: GridTileBar(
-          backgroundColor: Colors.black45,
-          title: FittedBox(
-            fit: BoxFit.scaleDown,
-            alignment: AlignmentDirectional.centerStart,
-            child: Text(violation.title),
+    return GestureDetector(
+      onTap: onTap,
+      child: GridTile(
+        footer: Material(
+          color: Colors.transparent,
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.vertical(top: Radius.circular(4))),
+          clipBehavior: Clip.antiAlias,
+          child: GridTileBar(
+            backgroundColor: Colors.black45,
+            title: Text(
+                violation.title,
+                maxLines: 1,
+            ),
           ),
         ),
+        child: image,
       ),
-      child: image,
     );
   }
 }

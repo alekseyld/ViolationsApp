@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:photocontrolapp/blocs/blocs.dart';
+import 'package:photocontrolapp/screens/screens.dart';
 import 'package:photocontrolapp/widgets/widgets.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -12,7 +15,14 @@ class HomeScreen extends StatelessWidget {
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
         onPressed: () {
-
+          Navigator.of(context).push(
+            MaterialPageRoute(builder: (_) {
+              return AddViolationScreen(onSave: (violation) {
+                BlocProvider.of<ViolationsBloc>(context)
+                  ..add(ViolationAdded(violation));
+              });
+            }),
+          );
         },
       ),
     );

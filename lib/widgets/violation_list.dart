@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:photocontrolapp/blocs/blocs.dart';
+import 'package:photocontrolapp/screens/screens.dart';
 import 'package:photocontrolapp/widgets/widgets.dart';
 
 class ViolationList extends StatelessWidget {
@@ -23,8 +24,13 @@ class ViolationList extends StatelessWidget {
             ),
             itemCount: violations.length,
             itemBuilder: (context, index) {
+              var violation = violations[index];
+
               return CardItem(
-                violation: violations[index],
+                violation: violation,
+                onTap: () {
+                  //TODO: Detail Screen
+                },
               );
             },
           );
@@ -38,11 +44,6 @@ class ViolationList extends StatelessWidget {
 
         return LoadingIndicator();
       },
-    );
-      ListView(
-      children: <Widget>[
-
-      ],
     );
   }
 }
