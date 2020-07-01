@@ -5,23 +5,20 @@ import 'package:photocontrolapp/screens/screens.dart';
 import 'package:photocontrolapp/widgets/widgets.dart';
 
 class ViolationList extends StatelessWidget {
-
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<ViolationsBloc, ViolationsState>(
       builder: (context, state) {
-
         if (state is ViolationsLoadSuccess) {
           var violations = state.violations;
 
           return GridView.builder(
             padding: const EdgeInsets.all(8.0),
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              crossAxisSpacing: 5.0,
-              mainAxisSpacing: 5.0,
-              childAspectRatio: 1
-            ),
+                crossAxisCount: 2,
+                crossAxisSpacing: 5.0,
+                mainAxisSpacing: 5.0,
+                childAspectRatio: 1),
             itemCount: violations.length,
             itemBuilder: (context, index) {
               var violation = violations[index];
@@ -29,7 +26,12 @@ class ViolationList extends StatelessWidget {
               return CardItem(
                 violation: violation,
                 onTap: () {
-                  //TODO: Detail Screen
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            DetailsScreen(violation: violation),
+                      ));
                 },
               );
             },

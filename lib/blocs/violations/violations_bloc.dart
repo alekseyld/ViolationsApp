@@ -34,7 +34,9 @@ class ViolationsBloc extends Bloc<ViolationsEvent, ViolationsState> {
       yield ViolationsLoadSuccess(
 //        violations.map(Violation.fromEntity).toList(),
           violations);
-    } catch (_) {
+    } catch (e, s) {
+      print("Exception $e");
+      print("Stacktrace $s");
       yield ViolationsLoadFailure();
     }
   }

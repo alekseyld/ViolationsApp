@@ -21,4 +21,18 @@ class Violation extends Equatable {
     return "Violation(title: $title, images=${images.length})";
   }
 
+  Violation.fromJson(Map<String, dynamic> json)
+      : id = json['id'],
+        title = json['title'],
+        description = json['description'],
+        images = (json["images"] as List).map((e) => e.toString()).toList();
+
+  Map<String, dynamic> toJson() =>
+      {
+        'id': id,
+        'title': title,
+        'description': description,
+        'images': images,
+      };
+
 }
