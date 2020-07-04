@@ -1,27 +1,29 @@
 import 'dart:io';
 
-import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 
-class CarouselWithIndicator extends StatefulWidget {
+class PageViewWithIndicator extends StatefulWidget {
   final List<String> photoList;
 
-  const CarouselWithIndicator({Key key, this.photoList}) : super(key: key);
+  const PageViewWithIndicator({Key key, this.photoList}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
-    return _CarouselWithIndicatorState();
+    return _PageViewWithIndicatorState();
   }
 }
 
-class _CarouselWithIndicatorState extends State<CarouselWithIndicator> {
+class _PageViewWithIndicatorState extends State<PageViewWithIndicator> {
   int _current = 0;
+
+  final controller = PageController(
+    initialPage: 0,
+  );
 
   @override
   Widget build(BuildContext context) {
     final List<Widget> imageSliders = widget.photoList
         .map((item) => Container(
-              width: 1000,
               child: Image.file(
                 File(item),
                 fit: BoxFit.cover,
@@ -30,16 +32,18 @@ class _CarouselWithIndicatorState extends State<CarouselWithIndicator> {
         .toList();
 
     return Stack(children: [
-      CarouselSlider(
-        items: imageSliders,
-        options: CarouselOptions(
-            aspectRatio: 1,
-            height: 400,
-            onPageChanged: (index, reason) {
-              setState(() {
-                _current = index;
-              });
-            }),
+      Container(
+        height: 400,
+        child: PageView(
+          onPageChanged: (value) {
+            setState(() {
+              _current = value;
+            });
+          },
+          controller: controller,
+          scrollDirection: Axis.horizontal,
+          children: imageSliders
+        ),
       ),
       Positioned(
         bottom: 20,

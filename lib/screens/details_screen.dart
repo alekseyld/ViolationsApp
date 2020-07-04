@@ -1,7 +1,4 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
-import 'package:path/path.dart';
 import 'package:photocontrolapp/models/models.dart';
 import 'package:photocontrolapp/widgets/widgets.dart';
 
@@ -23,34 +20,38 @@ class DetailsScreen extends StatelessWidget {
                 elevation: 0.0,
               ),
               extendBodyBehindAppBar: true,
-              body: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
+              body: Stack(
                 children: <Widget>[
-                  CarouselWithIndicator(
+                  PageViewWithIndicator(
                     photoList: violation.images,
                   ),
-                  Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Text(
-                      violation.title,
-                      maxLines: 1,
-                      style: textTheme.headline5,
+                  Container(
+                    margin: EdgeInsets.only(top: 380),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.all(Radius.circular(16.0))
                     ),
-                  ),
-                  const SizedBox(height: 8),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(
-                      "Описание:",
-                      style: TextStyle(fontStyle: FontStyle.italic),
-                      textAlign: TextAlign.start,
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(
-                      violation.description,
-                      style: textTheme.bodyText2,
+                    padding: EdgeInsets.all(26.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: <Widget>[
+                        Text(
+                          violation.title,
+                          maxLines: 1,
+                          style: textTheme.headline5,
+                        ),
+                        const SizedBox(height: 26),
+                        Text(
+                          "Описание:",
+                          style: TextStyle(fontFamily: 'RobotoThin', fontStyle: FontStyle.italic),
+                          textAlign: TextAlign.start,
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          violation.description,
+                          style: textTheme.bodyText2,
+                        ),
+                      ],
                     ),
                   ),
                 ],
