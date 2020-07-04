@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:photocontrolapp/blocs/blocs.dart';
 import 'package:photocontrolapp/blocs/simple_bloc_delegate.dart';
@@ -19,6 +20,13 @@ void main() {
 }
 
 class ViolationsApp extends StatelessWidget {
+
+  ViolationsApp() {
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+    ]);
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(

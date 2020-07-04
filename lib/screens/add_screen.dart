@@ -49,8 +49,8 @@ class _AddViolationScreenState extends State<AddViolationScreen> {
                 Text(
                   "Вложенные изображения:",
                   style: textTheme.subtitle1,
-                  textAlign: TextAlign.center,
                 ),
+                const SizedBox(height: 8.0,),
                 PhotoCard(
                   key: _photoCardKey
                 ),
