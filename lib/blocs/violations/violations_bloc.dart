@@ -25,6 +25,8 @@ class ViolationsBloc extends Bloc<ViolationsEvent, ViolationsState> {
       yield* _mapViolationUpdatedToState(event);
     } else if (event is ViolationDeleted) {
       yield* _mapViolationDeletedToState(event);
+    } else if (event is ViolationCompleted) {
+      yield* _mapViolationCompleteToState(event);
     }
   }
 
@@ -47,11 +49,21 @@ class ViolationsBloc extends Bloc<ViolationsEvent, ViolationsState> {
   Stream<ViolationsState> _mapViolationAddedToState(
       ViolationAdded event) async* {
     if (state is ViolationsLoadSuccess) {
-      final List<Violation> updatedViolations =
-          List.from((state as ViolationsLoadSuccess).violations)
-            ..add(event.violation);
-      yield ViolationsLoadSuccess(ViolationType.OPEN, updatedViolations);
-      _saveViolations(updatedViolations);
+      bool complete =
+          (state as ViolationsLoadSuccess).violations.first?.isComplete ??
+              false;
+
+      final allViolatation = await violationsRepository.loadViolations(null);
+
+//      final List<Violation> updatedViolations =
+//          List.from((state as ViolationsLoadSuccess).violations)
+      allViolatation.add(event.violation);
+//      yield ViolationsLoadSuccess(ViolationType.OPEN, updatedViolations);
+//      _saveViolations(updatedViolations);
+
+      await _saveViolations(allViolatation);
+      add(ViolationsLoaded(
+          complete ? ViolationType.COMPLETE : ViolationType.OPEN));
     }
   }
 
@@ -70,12 +82,58 @@ class ViolationsBloc extends Bloc<ViolationsEvent, ViolationsState> {
   Stream<ViolationsState> _mapViolationDeletedToState(
       ViolationDeleted event) async* {
     if (state is ViolationsLoadSuccess) {
-      final updatedViolations = (state as ViolationsLoadSuccess)
-          .violations
+      final allViolatation = await violationsRepository.loadViolations(null);
+
+      final deletingViolation = allViolatation
+          .firstWhere((violation) => violation.id == event.violation.id);
+
+      Violation updatedViolation = Violation(
+        id: deletingViolation.id,
+        title: deletingViolation.title,
+        description: deletingViolation.description,
+        images: deletingViolation.images,
+        isComplete: deletingViolation.isComplete,
+        isDelete: true,
+      );
+
+      final updatedViolations = allViolatation
           .where((violation) => violation.id != event.violation.id)
           .toList();
-      yield ViolationsLoadSuccess(ViolationType.OPEN, updatedViolations);
-      _saveViolations(updatedViolations);
+
+      updatedViolations?.add(updatedViolation);
+
+//      yield ViolationsLoadSuccess(ViolationType.COMPLETE, updatedViolations);
+      await _saveViolations(updatedViolations);
+      add(ViolationsLoaded(ViolationType.COMPLETE));
+    }
+  }
+
+  Stream<ViolationsState> _mapViolationCompleteToState(
+      ViolationCompleted event) async* {
+    if (state is ViolationsLoadSuccess) {
+      final allViolatation = await violationsRepository.loadViolations(null);
+
+      final completingViolation = allViolatation
+          .firstWhere((violation) => violation.id == event.violation.id);
+
+      Violation updatedViolation = Violation(
+        id: completingViolation.id,
+        title: completingViolation.title,
+        description: completingViolation.description,
+        images: completingViolation.images,
+        isComplete: true,
+        isDelete: false,
+      );
+
+      final updatedViolations = allViolatation
+          .where((violation) => violation.id != event.violation.id)
+          .toList();
+
+      updatedViolations?.add(updatedViolation);
+
+//      yield ViolationsLoadSuccess(ViolationType.OPEN, updatedViolations);
+      await _saveViolations(updatedViolations);
+      add(ViolationsLoaded(ViolationType.OPEN));
     }
   }
 

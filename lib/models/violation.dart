@@ -28,7 +28,7 @@ class Violation extends Equatable {
 
   @override
   String toString() {
-    return "Violation(title: $title, images=${images.length})";
+    return "Violation(title: $title, images=${images.length}, isComplete=$isComplete, isDelete=$isDelete})";
   }
 
   Violation.fromJson(Map<String, dynamic> json)

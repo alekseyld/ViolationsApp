@@ -43,7 +43,7 @@ class ViolationsRepository {
           .map((dynamic model) {
             return Violation.fromJson(model);
           })
-          .takeWhile((value) => _takeWhileType(value, type))
+          .where((value) => _takeWhileType(value, type))
           .toList();
 
       return violations;
