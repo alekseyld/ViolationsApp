@@ -6,12 +6,22 @@ class Violation extends Equatable {
   final String title;
   final String description;
   final List<String> images;
+  final bool isComplete;
+  final bool isDelete;
 
-  Violation({String id, String title, String description, List<String> images})
-      : this.id = id?.isEmpty == false ? id : Uuid().generateV4(),
+  Violation({
+    String id,
+    String title,
+    String description,
+    List<String> images,
+    bool isComplete,
+    bool isDelete
+  })  : this.id = id?.isEmpty == false ? id : Uuid().generateV4(),
         this.title = title,
         this.description = description,
-        this.images = images;
+        this.images = images,
+        this.isComplete = isComplete,
+        this.isDelete = isDelete;
 
   @override
   List<Object> get props => [];
@@ -25,14 +35,16 @@ class Violation extends Equatable {
       : id = json['id'],
         title = json['title'],
         description = json['description'],
-        images = (json["images"] as List).map((e) => e.toString()).toList();
+        images = (json["images"] as List).map((e) => e.toString()).toList(),
+        isComplete = json['isComplete'],
+        isDelete = json['isDelete'];
 
-  Map<String, dynamic> toJson() =>
-      {
+  Map<String, dynamic> toJson() => {
         'id': id,
         'title': title,
         'description': description,
         'images': images,
+        'isComplete': isComplete,
+        'isDelete': isDelete
       };
-
 }

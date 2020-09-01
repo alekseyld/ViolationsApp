@@ -18,7 +18,7 @@ class ViolationsBloc extends Bloc<ViolationsEvent, ViolationsState> {
   @override
   Stream<ViolationsState> mapEventToState(ViolationsEvent event) async* {
     if (event is ViolationsLoaded) {
-      yield* _mapViolationsLoadedToState();
+      yield* _mapViolationsLoadedToState(event.type);
     } else if (event is ViolationAdded) {
       yield* _mapViolationAddedToState(event);
     } else if (event is ViolationUpdated) {
@@ -28,12 +28,15 @@ class ViolationsBloc extends Bloc<ViolationsEvent, ViolationsState> {
     }
   }
 
-  Stream<ViolationsState> _mapViolationsLoadedToState() async* {
+  Stream<ViolationsState> _mapViolationsLoadedToState(
+      ViolationType type) async* {
     try {
-      final violations = await this.violationsRepository.loadViolations();
+      final violations = await this.violationsRepository.loadViolations(type);
       yield ViolationsLoadSuccess(
 //        violations.map(Violation.fromEntity).toList(),
-          violations);
+        type,
+        violations,
+      );
     } catch (e, s) {
       print("Exception $e");
       print("Stacktrace $s");
@@ -47,7 +50,7 @@ class ViolationsBloc extends Bloc<ViolationsEvent, ViolationsState> {
       final List<Violation> updatedViolations =
           List.from((state as ViolationsLoadSuccess).violations)
             ..add(event.violation);
-      yield ViolationsLoadSuccess(updatedViolations);
+      yield ViolationsLoadSuccess(ViolationType.OPEN, updatedViolations);
       _saveViolations(updatedViolations);
     }
   }
@@ -59,7 +62,7 @@ class ViolationsBloc extends Bloc<ViolationsEvent, ViolationsState> {
           (state as ViolationsLoadSuccess).violations.map((violation) {
         return violation.id == event.violation.id ? event.violation : violation;
       }).toList();
-      yield ViolationsLoadSuccess(updatedViolations);
+      yield ViolationsLoadSuccess(ViolationType.OPEN, updatedViolations);
       _saveViolations(updatedViolations);
     }
   }
@@ -71,7 +74,7 @@ class ViolationsBloc extends Bloc<ViolationsEvent, ViolationsState> {
           .violations
           .where((violation) => violation.id != event.violation.id)
           .toList();
-      yield ViolationsLoadSuccess(updatedViolations);
+      yield ViolationsLoadSuccess(ViolationType.OPEN, updatedViolations);
       _saveViolations(updatedViolations);
     }
   }

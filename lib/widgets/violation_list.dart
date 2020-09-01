@@ -5,8 +5,16 @@ import 'package:photocontrolapp/screens/screens.dart';
 import 'package:photocontrolapp/widgets/widgets.dart';
 
 class ViolationList extends StatelessWidget {
+  final ViolationType violationType;
+
+  ViolationList({this.violationType});
+
   @override
   Widget build(BuildContext context) {
+
+    BlocProvider.of<ViolationsBloc>(context)
+      ..add(ViolationsLoaded(violationType));
+
     return BlocBuilder<ViolationsBloc, ViolationsState>(
       builder: (context, state) {
         if (state is ViolationsLoadSuccess) {

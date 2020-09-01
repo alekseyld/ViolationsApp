@@ -10,17 +10,20 @@ import 'package:photocontrolapp/screens/screens.dart';
 void main() {
   BlocSupervisor.delegate = SimpleBlocDelegate();
   CameraHolder().initCameras();
-  runApp(RepositoryProvider<ViolationsRepository>(
+  runApp(
+    RepositoryProvider<ViolationsRepository>(
       create: (context) => ViolationsRepository(),
       child: BlocProvider(
-          create: (context) => ViolationsBloc(
-              violationsRepository: RepositoryProvider.of(context))
-            ..add(ViolationsLoaded()),
-          child: ViolationsApp())));
+        create: (context) =>
+            ViolationsBloc(violationsRepository: RepositoryProvider.of(context))
+              ..add(ViolationsLoaded(ViolationType.OPEN)),
+        child: ViolationsApp(),
+      ),
+    ),
+  );
 }
 
 class ViolationsApp extends StatelessWidget {
-
   ViolationsApp() {
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
