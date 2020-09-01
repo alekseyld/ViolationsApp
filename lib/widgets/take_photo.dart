@@ -60,43 +60,49 @@ class TakePicturePageState extends State<TakePicturePage> {
             // If the Future is complete, display the preview.
             return Column(
               children: <Widget>[
-                AspectRatio(
-                  aspectRatio: _controller.value.aspectRatio,
+                SizedBox(
+                  height: 500,
+//                AspectRatio(
+//                  aspectRatio: _controller.value.aspectRatio,
                     child: CameraPreview(_controller)
+//                ),
                 ),
                 Expanded(
-                  child: Align(
-                    alignment: Alignment.center,
-                    child: FloatingActionButton(
-                      child: Icon(Icons.camera),
-                      // Provide an onPressed callback.
-                      onPressed: () async {
-                        // Take the Picture in a try / catch block. If anything goes wrong,
-                        // catch the error.
-                        try {
-                          // Ensure that the camera is initialized.
-                          await _initializeControllerFuture;
+                  child: Container(
+                    color: Colors.black87,
+                    child: Align(
+                      alignment: Alignment.center,
+                      child: FloatingActionButton(
+                        child: Icon(Icons.camera),
+                        // Provide an onPressed callback.
+                        onPressed: () async {
+                          // Take the Picture in a try / catch block. If anything goes wrong,
+                          // catch the error.
+                          try {
+                            // Ensure that the camera is initialized.
+                            await _initializeControllerFuture;
 
-                          // Construct the path where the image should be saved using the
-                          // pattern package.
-                          final path = join(
-                            // Store the picture in the temp directory.
-                            // Find the temp directory using the `path_provider` plugin.
-                            (await getApplicationSupportDirectory()).path,
-                            '${DateTime.now()}.png',
-                          );
+                            // Construct the path where the image should be saved using the
+                            // pattern package.
+                            final path = join(
+                              // Store the picture in the temp directory.
+                              // Find the temp directory using the `path_provider` plugin.
+                              (await getApplicationSupportDirectory()).path,
+                              '${DateTime.now()}.png',
+                            );
 
-                          // Attempt to take a picture and log where it's been saved.
-                          await _controller.takePicture(path);
+                            // Attempt to take a picture and log where it's been saved.
+                            await _controller.takePicture(path);
 
-                          // If the picture was taken, display it on a new screen.
-                          Navigator.pop(context, path);
+                            // If the picture was taken, display it on a new screen.
+                            Navigator.pop(context, path);
 
-                        } catch (e) {
-                          // If an error occurs, log the error to the console.
-                          print(e);
-                        }
-                      },
+                          } catch (e) {
+                            // If an error occurs, log the error to the console.
+                            print(e);
+                          }
+                        },
+                      ),
                     ),
                   ),
                 )
