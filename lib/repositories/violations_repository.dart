@@ -48,9 +48,10 @@ class ViolationsRepository {
 
       return violations;
     } catch (e, s) {
-      print("Exception $e");
-      print("Stacktrace $s");
-      return [];
+      print("No violations.json file");
+//      print("Exception $e");
+//      print("Stacktrace $s");
+      return <Violation>[];
     }
   }
 

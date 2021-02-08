@@ -49,9 +49,12 @@ class ViolationsBloc extends Bloc<ViolationsEvent, ViolationsState> {
   Stream<ViolationsState> _mapViolationAddedToState(
       ViolationAdded event) async* {
     if (state is ViolationsLoadSuccess) {
-      bool complete =
-          (state as ViolationsLoadSuccess).violations.first?.isComplete ??
-              false;
+
+      bool complete = false;
+
+      try {
+        complete = (state as ViolationsLoadSuccess).violations.first?.isComplete;
+      } catch(e) {}
 
       final allViolatation = await violationsRepository.loadViolations(null);
 
