@@ -49,12 +49,12 @@ class ViolationsBloc extends Bloc<ViolationsEvent, ViolationsState> {
   Stream<ViolationsState> _mapViolationAddedToState(
       ViolationAdded event) async* {
     if (state is ViolationsLoadSuccess) {
-
       bool complete = false;
 
       try {
-        complete = (state as ViolationsLoadSuccess).violations.first?.isComplete;
-      } catch(e) {}
+        complete =
+            (state as ViolationsLoadSuccess).violations.first?.isComplete;
+      } catch (e) {}
 
       final allViolatation = await violationsRepository.loadViolations(null);
 
@@ -72,14 +72,12 @@ class ViolationsBloc extends Bloc<ViolationsEvent, ViolationsState> {
 
   Stream<ViolationsState> _mapViolationUpdatedToState(
       ViolationUpdated event) async* {
-    if (state is ViolationUpdated) {
-      final List<Violation> updatedViolations =
-          (state as ViolationsLoadSuccess).violations.map((violation) {
-        return violation.id == event.violation.id ? event.violation : violation;
-      }).toList();
-      yield ViolationsLoadSuccess(ViolationType.OPEN, updatedViolations);
-      _saveViolations(updatedViolations);
-    }
+    final List<Violation> updatedViolations =
+        (state as ViolationsLoadSuccess).violations.map((violation) {
+      return violation.id == event.violation.id ? event.violation : violation;
+    }).toList();
+    yield ViolationsLoadSuccess(ViolationType.OPEN, updatedViolations);
+    await _saveViolations(updatedViolations);
   }
 
   Stream<ViolationsState> _mapViolationDeletedToState(
@@ -140,8 +138,8 @@ class ViolationsBloc extends Bloc<ViolationsEvent, ViolationsState> {
     }
   }
 
-  Future _saveViolations(List<Violation> violations) {
-    return violationsRepository.saveViolations(
+  Future _saveViolations(List<Violation> violations) async {
+    return await violationsRepository.saveViolations(
 //      violations.map((violation) => violation.toEntity()).toList(),
         violations);
   }

@@ -11,14 +11,15 @@ class ViolationList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     BlocProvider.of<ViolationsBloc>(context)
       ..add(ViolationsLoaded(violationType));
+    final bloc = BlocProvider.of<ViolationsBloc>(context);
 
     return BlocBuilder<ViolationsBloc, ViolationsState>(
       builder: (context, state) {
         if (state is ViolationsLoadSuccess) {
           var violations = state.violations;
+
 
           return GridView.builder(
             padding: const EdgeInsets.all(8.0),
@@ -35,11 +36,14 @@ class ViolationList extends StatelessWidget {
                 violation: violation,
                 onTap: () {
                   Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) =>
-                            DetailsScreen(violation: violation),
-                      ));
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => DetailsScreen(
+                        bloc: bloc,
+                        violation: violation,
+                      ),
+                    ),
+                  );
                 },
               );
             },

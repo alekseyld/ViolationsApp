@@ -28,6 +28,8 @@ class ViolationsRepository {
 
     String json = jsonEncode(list);
 
+    print("saveViolations-$json");
+
     await file.writeAsString(json);
   }
 
@@ -49,8 +51,8 @@ class ViolationsRepository {
       return violations;
     } catch (e, s) {
       print("No violations.json file");
-//      print("Exception $e");
-//      print("Stacktrace $s");
+     print("Exception $e");
+     print("Stacktrace $s");
       return <Violation>[];
     }
   }
