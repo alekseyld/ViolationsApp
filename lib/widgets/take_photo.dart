@@ -22,6 +22,8 @@ class TakePicturePage extends StatefulWidget {
 class TakePicturePageState extends State<TakePicturePage> {
   CameraController _controller;
   Future<void> _initializeControllerFuture;
+  AnimationController _focusModeControlRowAnimationController;
+  Animation<double> _focusModeControlRowAnimation;
 
   @override
   void initState() {
@@ -46,9 +48,12 @@ class TakePicturePageState extends State<TakePicturePage> {
     super.dispose();
   }
 
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       appBar: AppBar(title: Text('Take a picture')),
       // Wait until the controller is initialized before displaying the
       // camera preview. Use a FutureBuilder to display a loading spinner
@@ -61,47 +66,55 @@ class TakePicturePageState extends State<TakePicturePage> {
             return Column(
               children: <Widget>[
                 SizedBox(
-                  height: 500,
+                    height: 500,
 //                AspectRatio(
 //                  aspectRatio: _controller.value.aspectRatio,
                     child: CameraPreview(_controller)
 //                ),
-                ),
+                    ),
                 Expanded(
                   child: Container(
                     color: Colors.black87,
                     child: Align(
                       alignment: Alignment.center,
-                      child: FloatingActionButton(
-                        child: Icon(Icons.camera),
-                        // Provide an onPressed callback.
-                        onPressed: () async {
-                          // Take the Picture in a try / catch block. If anything goes wrong,
-                          // catch the error.
-                          try {
-                            // Ensure that the camera is initialized.
-                            await _initializeControllerFuture;
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          FloatingActionButton(
+                            child: Icon(Icons.camera),
+                            // Provide an onPressed callback.
+                            onPressed: () async {
+                              // Take the Picture in a try / catch block. If anything goes wrong,
+                              // catch the error.
+                              try {
+                                // Ensure that the camera is initialized.
+                                await _initializeControllerFuture;
 
-                            // Construct the path where the image should be saved using the
-                            // pattern package.
-                            final path = join(
-                              // Store the picture in the temp directory.
-                              // Find the temp directory using the `path_provider` plugin.
-                              (await getApplicationSupportDirectory()).path,
-                              '${DateTime.now()}.png',
-                            );
+                                // Construct the path where the image should be saved using the
+                                // pattern package.
+                                final path = join(
+                                  // Store the picture in the temp directory.
+                                  // Find the temp directory using the `path_provider` plugin.
+                                  (await getApplicationSupportDirectory()).path,
+                                  '${DateTime.now()}.png',
+                                );
 
-                            // Attempt to take a picture and log where it's been saved.
-                            await _controller.takePicture(path);
+                                // Attempt to take a picture and log where it's been saved.
+                                var xfile = await _controller.takePicture();
 
-                            // If the picture was taken, display it on a new screen.
-                            Navigator.pop(context, path);
+                                print(xfile.path);
+                                xfile.saveTo(path);
 
-                          } catch (e) {
-                            // If an error occurs, log the error to the console.
-                            print(e);
-                          }
-                        },
+                                // If the picture was taken, display it on a new screen.
+                                Navigator.pop(context, path);
+                              } catch (e) {
+                                // If an error occurs, log the error to the console.
+                                print(e);
+                              }
+                            },
+                          ),
+                          _focusModeControlRowWidget(),
+                        ],
                       ),
                     ),
                   ),
@@ -115,6 +128,79 @@ class TakePicturePageState extends State<TakePicturePage> {
         },
       ),
     );
+  }
+
+  Widget _focusModeControlRowWidget() {
+    final ButtonStyle styleAuto = TextButton.styleFrom(
+      primary: _controller?.value?.focusMode == FocusMode.auto
+          ? Colors.orange
+          : Colors.blue,
+    );
+    final ButtonStyle styleLocked = TextButton.styleFrom(
+      primary: _controller?.value?.focusMode == FocusMode.locked
+          ? Colors.orange
+          : Colors.blue,
+    );
+
+    return Container(
+      child: Column(
+        children: [
+          Center(
+            child: Text("Focus Mode", style: TextStyle(color: Colors.white),),
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            mainAxisSize: MainAxisSize.max,
+            children: [
+              TextButton(
+                child: Text('AUTO'),
+                style: styleAuto,
+                onPressed: _controller != null
+                    ? () => onSetFocusModeButtonPressed(FocusMode.auto)
+                    : null,
+                onLongPress: () {
+                  if (_controller != null) _controller.setFocusPoint(null);
+                  showInSnackBar('Resetting focus point');
+                },
+              ),
+              TextButton(
+                child: Text('LOCKED'),
+                style: styleLocked,
+                onPressed: _controller != null
+                    ? () => onSetFocusModeButtonPressed(FocusMode.locked)
+                    : null,
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  void onSetFocusModeButtonPressed(FocusMode mode) {
+    setFocusMode(mode).then((_) {
+      if (mounted) setState(() {});
+      showInSnackBar('Focus mode set to ${mode.toString().split('.').last}');
+    });
+  }
+
+  Future<void> setFocusMode(FocusMode mode) async {
+    try {
+      await _controller.setFocusMode(mode);
+    } on CameraException catch (e) {
+      _showCameraException(e);
+      rethrow;
+    }
+  }
+
+  void _showCameraException(CameraException e) {
+    print('Error: ${e.code}\nError Message: ${e.description}');
+    showInSnackBar('Error: ${e.code}\n${e.description}');
+  }
+
+  void showInSnackBar(String message) {
+    // ignore: deprecated_member_use
+    // _scaffoldKey.currentState.showSnackBar(SnackBar(content: Text(message)));
   }
 }
 
