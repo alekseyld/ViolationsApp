@@ -25,6 +25,8 @@ class TakePicturePageState extends State<TakePicturePage> {
   AnimationController _focusModeControlRowAnimationController;
   Animation<double> _focusModeControlRowAnimation;
 
+  bool isClickable = true;
+
   @override
   void initState() {
     super.initState();
@@ -63,18 +65,28 @@ class TakePicturePageState extends State<TakePicturePage> {
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
             // If the Future is complete, display the preview.
-            return Column(
+            return Stack(
               children: <Widget>[
-                SizedBox(
-                    height: 500,
-//                AspectRatio(
-//                  aspectRatio: _controller.value.aspectRatio,
-                    child: CameraPreview(_controller)
-//                ),
-                    ),
-                Expanded(
+                Container(
+                  height: MediaQuery.of(context).size.height,
+                  color: Colors.black,
+                ),
+                Container(
+                  child: AspectRatio(
+                    //previewSize.width / previewSize.height
+                    // aspectRatio: _controller.value.aspectRatio,
+                    aspectRatio: _controller.value.previewSize.height /
+                        _controller.value.previewSize.width,
+                    child: CameraPreview(_controller),
+                  ),
+                ),
+                Positioned(
+                  bottom: 0,
+                  left: 0,
+                  right: 0,
                   child: Container(
                     color: Colors.black87,
+                    padding: const EdgeInsets.all(36.0),
                     child: Align(
                       alignment: Alignment.center,
                       child: Column(
@@ -83,35 +95,9 @@ class TakePicturePageState extends State<TakePicturePage> {
                           FloatingActionButton(
                             child: Icon(Icons.camera),
                             // Provide an onPressed callback.
-                            onPressed: () async {
-                              // Take the Picture in a try / catch block. If anything goes wrong,
-                              // catch the error.
-                              try {
-                                // Ensure that the camera is initialized.
-                                await _initializeControllerFuture;
-
-                                // Construct the path where the image should be saved using the
-                                // pattern package.
-                                final path = join(
-                                  // Store the picture in the temp directory.
-                                  // Find the temp directory using the `path_provider` plugin.
-                                  (await getApplicationSupportDirectory()).path,
-                                  '${DateTime.now()}.png',
-                                );
-
-                                // Attempt to take a picture and log where it's been saved.
-                                var xfile = await _controller.takePicture();
-
-                                print(xfile.path);
-                                xfile.saveTo(path);
-
-                                // If the picture was taken, display it on a new screen.
-                                Navigator.pop(context, path);
-                              } catch (e) {
-                                // If an error occurs, log the error to the console.
-                                print(e);
-                              }
-                            },
+                            onPressed: isClickable
+                                ? () => onFloatingButtonClick(context)
+                                : null,
                           ),
                           _focusModeControlRowWidget(),
                         ],
@@ -130,6 +116,44 @@ class TakePicturePageState extends State<TakePicturePage> {
     );
   }
 
+  void onFloatingButtonClick(BuildContext context) async {
+    // Take the Picture in a try / catch block. If anything goes wrong,
+    // catch the error.
+    setState(() {
+      isClickable = false;
+    });
+
+    try {
+      // Ensure that the camera is initialized.
+      await _initializeControllerFuture;
+
+      // Construct the path where the image should be saved using the
+      // pattern package.
+      final path = join(
+        // Store the picture in the temp directory.
+        // Find the temp directory using the `path_provider` plugin.
+        (await getApplicationSupportDirectory()).path,
+        '${DateTime.now()}.png',
+      );
+
+      // Attempt to take a picture and log where it's been saved.
+      var xfile = await _controller.takePicture();
+
+      print(xfile.path);
+      xfile.saveTo(path);
+
+      // If the picture was taken, display it on a new screen.
+      Navigator.pop(context, path);
+    } catch (e) {
+      // If an error occurs, log the error to the console.
+      print(e);
+
+      setState(() {
+        isClickable = true;
+      });
+    }
+  }
+
   Widget _focusModeControlRowWidget() {
     final ButtonStyle styleAuto = TextButton.styleFrom(
       primary: _controller?.value?.focusMode == FocusMode.auto
@@ -146,7 +170,10 @@ class TakePicturePageState extends State<TakePicturePage> {
       child: Column(
         children: [
           Center(
-            child: Text("Focus Mode", style: TextStyle(color: Colors.white),),
+            child: Text(
+              "Focus Mode",
+              style: TextStyle(color: Colors.white),
+            ),
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
