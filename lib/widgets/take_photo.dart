@@ -117,6 +117,8 @@ class TakePicturePageState extends State<TakePicturePage> {
   }
 
   void onFloatingButtonClick(BuildContext context) async {
+    print("onFloatingButtonClick");
+
     // Take the Picture in a try / catch block. If anything goes wrong,
     // catch the error.
     setState(() {
@@ -133,8 +135,10 @@ class TakePicturePageState extends State<TakePicturePage> {
         // Store the picture in the temp directory.
         // Find the temp directory using the `path_provider` plugin.
         (await getApplicationSupportDirectory()).path,
-        '${DateTime.now()}.png',
+        '${DateTime.now().millisecondsSinceEpoch}.png',
       );
+
+      print("onFloatingButtonClick: $path");
 
       // Attempt to take a picture and log where it's been saved.
       var xfile = await _controller.takePicture();
@@ -144,9 +148,11 @@ class TakePicturePageState extends State<TakePicturePage> {
 
       // If the picture was taken, display it on a new screen.
       Navigator.pop(context, path);
-    } catch (e) {
+    } catch (e, s) {
       // If an error occurs, log the error to the console.
+      print("onFloatingButtonError");
       print(e);
+      print(s);
 
       setState(() {
         isClickable = true;
