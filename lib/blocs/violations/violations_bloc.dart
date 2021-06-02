@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:photocontrolapp/models/models.dart';
 import 'package:photocontrolapp/repositories/repositories.dart';
 
+import '../blocs.dart';
+import '../blocs.dart';
 import './bloc.dart';
 
 class ViolationsBloc extends Bloc<ViolationsEvent, ViolationsState> {
@@ -13,7 +15,7 @@ class ViolationsBloc extends Bloc<ViolationsEvent, ViolationsState> {
   ViolationsBloc({@required this.violationsRepository});
 
   @override
-  ViolationsState get initialState => ViolationsLoadInProgress();
+  ViolationsState get initialState => ViolationsLoadInProgress(ViolationType.OPEN);
 
   @override
   Stream<ViolationsState> mapEventToState(ViolationsEvent event) async* {
@@ -32,6 +34,7 @@ class ViolationsBloc extends Bloc<ViolationsEvent, ViolationsState> {
 
   Stream<ViolationsState> _mapViolationsLoadedToState(
       ViolationType type) async* {
+    yield ViolationsLoadInProgress(type);
     try {
       final violations = await this.violationsRepository.loadViolations(type);
       yield ViolationsLoadSuccess(
@@ -42,7 +45,7 @@ class ViolationsBloc extends Bloc<ViolationsEvent, ViolationsState> {
     } catch (e, s) {
       print("Exception $e");
       print("Stacktrace $s");
-      yield ViolationsLoadFailure();
+      yield ViolationsLoadFailure(type);
     }
   }
 

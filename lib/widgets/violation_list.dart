@@ -16,6 +16,9 @@ class ViolationList extends StatelessWidget {
     final bloc = BlocProvider.of<ViolationsBloc>(context);
 
     return BlocBuilder<ViolationsBloc, ViolationsState>(
+      condition: (previous, current) {
+        return current.type == violationType;
+      },
       builder: (context, state) {
         if (state is ViolationsLoadSuccess) {
           var violations = state.violations;

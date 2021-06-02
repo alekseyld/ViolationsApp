@@ -4,6 +4,10 @@ import 'package:photocontrolapp/blocs/blocs.dart';
 import 'package:photocontrolapp/screens/screens.dart';
 import 'package:photocontrolapp/widgets/widgets.dart';
 
+import '../blocs/blocs.dart';
+import '../blocs/blocs.dart';
+import '../blocs/blocs.dart';
+
 class HomeScreen extends StatefulWidget {
   @override
   _HomeScreenState createState() => _HomeScreenState();
@@ -22,6 +26,10 @@ class _HomeScreenState extends State<HomeScreen> {
               Tab(icon: Icon(Icons.assignment_late)),
               Tab(icon: Icon(Icons.assignment_turned_in_outlined)),
             ],
+            onTap: (value) {
+              BlocProvider.of<ViolationsBloc>(context)
+                ..add(ViolationsLoaded(value == 0 ? ViolationType.OPEN : ViolationType.COMPLETE));
+            },
           ),
           title: Text('Нарушения'),
         ),
