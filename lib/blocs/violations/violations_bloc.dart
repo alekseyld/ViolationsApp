@@ -94,6 +94,7 @@ class ViolationsBloc extends Bloc<ViolationsEvent, ViolationsState> {
         description: deletingViolation.description,
         images: deletingViolation.images,
         isComplete: deletingViolation.isComplete,
+        comments: deletingViolation.comments,
         isDelete: true,
       );
 
@@ -122,6 +123,7 @@ class ViolationsBloc extends Bloc<ViolationsEvent, ViolationsState> {
         title: completingViolation.title,
         description: completingViolation.description,
         images: completingViolation.images,
+        comments: completingViolation.comments,
         isComplete: true,
         isDelete: false,
       );

@@ -96,6 +96,7 @@ class _AddViolationScreenState extends State<AddViolationScreen> {
                             images: _photoCardKey.currentState.photoPathList,
                             isComplete: false,
                             isDelete: false,
+                            comments: [],
                           )
                         );
                         Navigator.pop(context);

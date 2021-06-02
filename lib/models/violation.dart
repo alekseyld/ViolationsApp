@@ -47,6 +47,6 @@ class Violation extends Equatable {
         'images': images,
         'isComplete': isComplete,
         'isDelete': isDelete,
-        'comments': comments,
+        'comments': comments.map((e) => e.toJson()).toList(),
       };
 }
